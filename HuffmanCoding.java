@@ -1,7 +1,6 @@
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
-import java.awt.Color;
-import java.awt.Container;
+
 import java.io.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -40,8 +39,6 @@ class FileUploader {
 
     private static void setFileChooserColors(JFileChooser fileChooser) {
         // تغییر رنگ پس‌زمینه و اجزای داخلی
-       
-        
 
         // دستیابی به اجزای داخلی و تغییر رنگ آن‌ها
         setColorsRecursively(fileChooser, Color.LIGHT_GRAY, Color.WHITE);
@@ -49,7 +46,7 @@ class FileUploader {
 
     private static void setColorsRecursively(Component component, Color bg, Color fg) {
         component.setBackground(bg);
-       
+
         if (component instanceof Container) {
             for (Component child : ((Container) component).getComponents()) {
                 setColorsRecursively(child, bg, fg);
@@ -76,7 +73,9 @@ class TextAnalyzer {
     public static Map<Character, Integer> analyzeText(String text) {
         Map<Character, Integer> frequencyMap = new HashMap<>();
         for (char c : text.toCharArray()) {
-            frequencyMap.put(c, frequencyMap.getOrDefault(c, 0) + 1);
+            if (c != '\r' && c !='\n') { // نادیده گرفتن کاراکترهای خط جدید
+                frequencyMap.put(c, frequencyMap.getOrDefault(c, 0) + 1);
+            }
         }
         return frequencyMap;
     }
@@ -143,20 +142,27 @@ class HuffmanCode {
 public class HuffmanCoding {
     public static void main(String[] args) {
         String text = FileUploader.uploadFile();
+
         if (text != null) {
             Map<Character, Integer> frequencyMap = TextAnalyzer.analyzeText(text);
-            HuffmanNode root = HuffmanTree.buildTree(frequencyMap);
-            Map<Character, String> huffmanCodes = HuffmanCode.generateCodes(root);
-
+            System.out.println(text);
             System.out.println("Character Frequencies:");
             for (Map.Entry<Character, Integer> entry : frequencyMap.entrySet()) {
                 System.out.println("'" + entry.getKey() + "': " + entry.getValue());
             }
+            // System.out.println(frequencyMap);
+            // HuffmanNode root = HuffmanTree.buildTree(frequencyMap);
+            // Map<Character, String> huffmanCodes = HuffmanCode.generateCodes(root);
 
-            System.out.println("\nHuffman Codes:");
-            for (Map.Entry<Character, String> entry : huffmanCodes.entrySet()) {
-                System.out.println("'" + entry.getKey() + "': " + entry.getValue());
-            }
+            // System.out.println("Character Frequencies:");
+            // for (Map.Entry<Character, Integer> entry : frequencyMap.entrySet()) {
+            // System.out.println("'" + entry.getKey() + "': " + entry.getValue());
+            // }
+
+            // System.out.println("\nHuffman Codes:");
+            // for (Map.Entry<Character, String> entry : huffmanCodes.entrySet()) {
+            // System.out.println("'" + entry.getKey() + "': " + entry.getValue());
+            // }
         }
     }
 }
