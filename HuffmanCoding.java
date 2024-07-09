@@ -1,33 +1,27 @@
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
-
-import java.io.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 // کلاس برای آپلود فایل
 class FileUploader {
     public static String uploadFile() {
-        //
         JFileChooser fileChooser = new JFileChooser();
-        //
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
         fileChooser.setFileFilter(filter);
-        //
         fileChooser.setDialogTitle("Select a text file");
         fileChooser.setApproveButtonText("Upload");
         fileChooser.setApproveButtonToolTipText("Click to upload the selected text file");
 
         // تنظیمات پیش‌فرض برای دایرکتوری
         fileChooser.setCurrentDirectory(new File("C:\\Users\\Lenovo\\Desktop"));
-        // حالت انتخاب فقط فایل‌ها
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        //
-        // تغییر رنگ پس‌زمینه و اجزای داخلی
-        setFileChooserColors(fileChooser);
 
         int result = fileChooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -35,23 +29,6 @@ class FileUploader {
             return readFile(selectedFile);
         }
         return null;
-    }
-
-    private static void setFileChooserColors(JFileChooser fileChooser) {
-        // تغییر رنگ پس‌زمینه و اجزای داخلی
-
-        // دستیابی به اجزای داخلی و تغییر رنگ آن‌ها
-        setColorsRecursively(fileChooser, Color.LIGHT_GRAY, Color.WHITE);
-    }
-
-    private static void setColorsRecursively(Component component, Color bg, Color fg) {
-        component.setBackground(bg);
-
-        if (component instanceof Container) {
-            for (Component child : ((Container) component).getComponents()) {
-                setColorsRecursively(child, bg, fg);
-            }
-        }
     }
 
     private static String readFile(File file) {
@@ -73,7 +50,7 @@ class TextAnalyzer {
     public static Map<Character, Integer> analyzeText(String text) {
         Map<Character, Integer> frequencyMap = new HashMap<>();
         for (char c : text.toCharArray()) {
-            if (c != '\r' && c !='\n') { // نادیده گرفتن کاراکترهای خط جدید
+            if (c != '\r' && c != '\n') { // نادیده گرفتن کاراکترهای خط جدید
                 frequencyMap.put(c, frequencyMap.getOrDefault(c, 0) + 1);
             }
         }
@@ -138,6 +115,44 @@ class HuffmanCode {
     }
 }
 
+// کلاس برای رسم درخت هافمن
+class HuffmanTreePanel extends JPanel {
+    private HuffmanNode root;
+    private Map<Character, String> huffmanCodes;
+
+    public HuffmanTreePanel(HuffmanNode root, Map<Character, String> huffmanCodes) {
+        this.root = root;
+        this.huffmanCodes = huffmanCodes;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (root != null) {
+            drawTree(g, root, getWidth() / 2, 30, getWidth() / 4);
+        }
+    }
+
+    private void drawTree(Graphics g, HuffmanNode node, int x, int y, int xOffset) {
+        if (node != null) {
+            g.drawOval(x - 15, y - 15, 30, 30);
+            g.drawString(String.valueOf(node.c), x - 5, y + 5);
+            g.drawString(String.valueOf(node.frequency), x - 5, y + 20);
+            if (node.left == null && node.right == null) {
+                g.drawString(huffmanCodes.get(node.c), x - 15, y + 35);
+            }
+            if (node.left != null) {
+                g.drawLine(x, y, x - xOffset, y + 50);
+                drawTree(g, node.left, x - xOffset, y + 50, xOffset / 2);
+            }
+            if (node.right != null) {
+                g.drawLine(x, y, x + xOffset, y + 50);
+                drawTree(g, node.right, x + xOffset, y + 50, xOffset / 2);
+            }
+        }
+    }
+}
+
 // کلاس اصلی برای اجرای برنامه
 public class HuffmanCoding {
     public static void main(String[] args) {
@@ -145,24 +160,24 @@ public class HuffmanCoding {
 
         if (text != null) {
             Map<Character, Integer> frequencyMap = TextAnalyzer.analyzeText(text);
-            System.out.println(text);
             System.out.println("Character Frequencies:");
             for (Map.Entry<Character, Integer> entry : frequencyMap.entrySet()) {
                 System.out.println("'" + entry.getKey() + "': " + entry.getValue());
             }
-            // System.out.println(frequencyMap);
-            // HuffmanNode root = HuffmanTree.buildTree(frequencyMap);
-            // Map<Character, String> huffmanCodes = HuffmanCode.generateCodes(root);
 
-            // System.out.println("Character Frequencies:");
-            // for (Map.Entry<Character, Integer> entry : frequencyMap.entrySet()) {
-            // System.out.println("'" + entry.getKey() + "': " + entry.getValue());
-            // }
+            HuffmanNode root = HuffmanTree.buildTree(frequencyMap);
+            Map<Character, String> huffmanCodes = HuffmanCode.generateCodes(root);
 
-            // System.out.println("\nHuffman Codes:");
-            // for (Map.Entry<Character, String> entry : huffmanCodes.entrySet()) {
-            // System.out.println("'" + entry.getKey() + "': " + entry.getValue());
-            // }
+            System.out.println("\nHuffman Codes:");
+            for (Map.Entry<Character, String> entry : huffmanCodes.entrySet()) {
+                System.out.println("'" + entry.getKey() + "': " + entry.getValue());
+            }
+
+            JFrame frame = new JFrame("Huffman Tree");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(800, 600);
+            frame.add(new HuffmanTreePanel(root, huffmanCodes));
+            frame.setVisible(true);
         }
     }
 }
