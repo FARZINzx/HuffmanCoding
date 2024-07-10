@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 
 // کلاس برای آپلود فایل
 class FileUploader {
@@ -113,6 +116,36 @@ class HuffmanCode {
         generateCodesRecursive(node.left, code + "0", codeMap);
         generateCodesRecursive(node.right, code + "1", codeMap);
     }
+
+    public static String encodeText(String text, Map<Character, String> huffmanCodes) {
+        StringBuilder encodedText = new StringBuilder();
+        for (char c : text.toCharArray()) {
+            if (huffmanCodes.containsKey(c)) {
+                encodedText.append(huffmanCodes.get(c));
+            }
+        }
+        return encodedText.toString();
+    }
+}
+
+// کلاس برای نمایش جدول تبدیل
+class HuffmanTablePanel extends JPanel {
+    private Map<Character, String> huffmanCodes;
+
+    public HuffmanTablePanel(Map<Character, String> huffmanCodes) {
+        this.huffmanCodes = huffmanCodes;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.setFont(new Font("Sans-serif", Font.PLAIN, 16));
+        int y = 20;
+        for (Map.Entry<Character, String> entry : huffmanCodes.entrySet()) {
+            g.drawString(entry.getKey() + ": " + entry.getValue(), 10, y);
+            y += 20;
+        }
+    }
 }
 
 // کلاس برای رسم درخت هافمن
@@ -128,16 +161,55 @@ class HuffmanTreePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        setBackground(Color.CYAN);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setStroke(new BasicStroke(2)); // تنظیم ضخامت خطوط به 2 پیکسل
+
         if (root != null) {
-            drawTree(g, root, getWidth() / 2, 30, getWidth() / 4);
+            drawTree(g2d, root, getWidth() / 2, 30, getWidth() / 4);
+            drawFrequencyAndCodes(g2d, root, getWidth() / 2, 30, getWidth() / 4);
+        }
+    }
+
+    private void drawFrequencyAndCodes(Graphics g, HuffmanNode node, int x, int y, int xOffset) {
+        if (node != null) {
+            if (node.left != null) {
+                int xLeft = x - xOffset;
+                int yLeft = y + 50;
+                g.drawLine(x, y, xLeft, yLeft);
+                drawFrequencyAndCodes(g, node.left, xLeft, yLeft, xOffset / 2);
+            }
+            if (node.right != null) {
+                int xRight = x + xOffset;
+                int yRight = y + 50;
+                g.drawLine(x, y, xRight, yRight);
+                drawFrequencyAndCodes(g, node.right, xRight, yRight, xOffset / 2);
+            }
+
+            // نمایش فراوانی و کد هافمن در زیر هر نود
+            if (node.left == null && node.right == null) {
+                g.drawString("Code: " + huffmanCodes.get(node.c), x - 15, y + 100);
+                g.drawString("Freq: " + node.frequency, x - 15, y + 80);
+            }
         }
     }
 
     private void drawTree(Graphics g, HuffmanNode node, int x, int y, int xOffset) {
         if (node != null) {
             g.drawOval(x - 15, y - 15, 30, 30);
+            g.setColor(Color.white);
+            g.fillOval(x - 15, y - 15, 30, 30);
+            g.setColor(Color.black);
             g.drawString(String.valueOf(node.c), x - 5, y + 5);
             g.drawString(String.valueOf(node.frequency), x - 5, y + 20);
+
+            // تنظیم فونت با اندازه بزرگتر
+            Font originalFont = g.getFont();
+            Font largeFont = originalFont.deriveFont(Font.ITALIC, 14); // ساخت یک فونت جدید با اندازه 14 پیکسل و روشنایی
+                                                                       // باکس
+            g.setFont(largeFont);
+            g.setColor(Color.BLUE);
+
             if (node.left == null && node.right == null) {
                 g.drawString(huffmanCodes.get(node.c), x - 15, y + 35);
             }
@@ -149,6 +221,44 @@ class HuffmanTreePanel extends JPanel {
                 g.drawLine(x, y, x + xOffset, y + 50);
                 drawTree(g, node.right, x + xOffset, y + 50, xOffset / 2);
             }
+        }
+    }
+}
+
+// کلاس برای نمایش متن کدگذاری شده
+class EncodedTextPanel extends JPanel {
+    private String encodedText;
+
+    public EncodedTextPanel(String encodedText) {
+        this.encodedText = encodedText;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.setFont(new Font("Arial", Font.PLAIN, 16));
+        g.drawString("Encoded Text:", 10, 20);
+        g.drawString(encodedText, 10, 50);
+    }
+}
+
+class FileSaver {
+    public static void saveEncodedText(String encodedText, String filePath) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write(encodedText);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveHuffmanCodes(Map<Character, String> huffmanCodes, String filePath) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (Map.Entry<Character, String> entry : huffmanCodes.entrySet()) {
+                writer.write(entry.getKey() + ": " + entry.getValue());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
@@ -173,10 +283,31 @@ public class HuffmanCoding {
                 System.out.println("'" + entry.getKey() + "': " + entry.getValue());
             }
 
-            JFrame frame = new JFrame("Huffman Tree");
+            String encodedText = HuffmanCode.encodeText(text, huffmanCodes);
+            System.out.println("\nEncoded Text:");
+            System.out.println(encodedText);
+
+            // ذخیره متن کدگذاری شده و جدول تبدیل در فایل‌های متنی
+            FileSaver.saveEncodedText(encodedText, "encoded_text.txt");
+            FileSaver.saveHuffmanCodes(huffmanCodes, "huffman_codes.txt");
+
+            JFrame frame = new JFrame("Huffman Coding");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 600);
-            frame.add(new HuffmanTreePanel(root, huffmanCodes));
+            frame.setSize(800, 800);
+
+            // افزودن پنل‌های درخت، جدول تبدیل و متن کدگذاری شده
+            JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+            JSplitPane upperSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+
+            upperSplitPane.setLeftComponent(new HuffmanTreePanel(root, huffmanCodes));
+            upperSplitPane.setRightComponent(new HuffmanTablePanel(huffmanCodes));
+            upperSplitPane.setDividerLocation(400);
+
+            mainSplitPane.setTopComponent(upperSplitPane);
+            mainSplitPane.setBottomComponent(new EncodedTextPanel(encodedText));
+            mainSplitPane.setDividerLocation(600);
+
+            frame.add(mainSplitPane);
             frame.setVisible(true);
         }
     }
