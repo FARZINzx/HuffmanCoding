@@ -1,3 +1,4 @@
+
 //import JAVAX.SWING.LIBRARIES
 import javax.swing.JPanel;
 import javax.swing.JFileChooser;
@@ -25,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-
 // Class that provides functionality for selecting and uploading a text file
 class FileUploader {
     // Method to upload a file using a file chooser
@@ -39,7 +39,7 @@ class FileUploader {
         fileChooser.setApproveButtonToolTipText("Click to Submit the selected text file");
 
         // Setting Default repository
-        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncodingApplication"));
+        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncoding"));
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         int result = fileChooser.showOpenDialog(null);
@@ -98,7 +98,7 @@ class HuffmanNode implements Comparable<HuffmanNode> {
 }
 
 // Class for building the Huffman tree by HuffmanNode
-class HuffmanTree {
+class HuffmanTreeBulider {
     public static HuffmanNode buildTree(Map<Character, Integer> frequencyMap) {
         // Create a priority queue(Min-heap) to hold the nodes, sorted by frequency
         PriorityQueue<HuffmanNode> queue = new PriorityQueue<>();
@@ -324,7 +324,7 @@ class FileSaver {
     public static void saveEncodedText(String encodedText) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Encoded Text");
-        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncodingApplication"));
+        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncoding"));
         int userSelection = fileChooser.showSaveDialog(null);
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
@@ -340,7 +340,7 @@ class FileSaver {
     public static void saveHuffmanCodes(Map<Character, String> huffmanCodes) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Huffman Codes");
-        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncodingApplication"));
+        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncoding"));
         int userSelection = fileChooser.showSaveDialog(null);
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
@@ -359,7 +359,7 @@ class FileSaver {
     public static void saveDecodedText(String decodedText) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Decoded Text");
-        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncodingApplication"));
+        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncoding"));
         int userSelection = fileChooser.showSaveDialog(null);
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
@@ -404,7 +404,7 @@ public class HuffmanEncodingApplication {
             Map<Character, Integer> frequencyMap = TextAnalyzer.analyzeText(text);
 
             // Build the Huffman tree from the frequency map
-            HuffmanNode root = HuffmanTree.buildTree(frequencyMap);
+            HuffmanNode root = HuffmanTreeBulider.buildTree(frequencyMap);
 
             // Generate Huffman codes from the Huffman tree
             Map<Character, String> huffmanCodes = HuffmanCode.generateCodes(root);
