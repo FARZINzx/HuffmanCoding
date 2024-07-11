@@ -34,12 +34,12 @@ class FileUploader {
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
         fileChooser.setFileFilter(filter);
-        fileChooser.setDialogTitle("Please,Select .txt file!");
+        fileChooser.setDialogTitle("Select text file!");
         fileChooser.setApproveButtonText("Submit");
         fileChooser.setApproveButtonToolTipText("Click to Submit the selected text file");
 
         // Setting Default repository
-        fileChooser.setCurrentDirectory(new File("C:\\Users\\Lenovo\\Desktop"));
+        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncodingApplication"));
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         int result = fileChooser.showOpenDialog(null);
@@ -324,7 +324,7 @@ class FileSaver {
     public static void saveEncodedText(String encodedText) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Encoded Text");
-        fileChooser.setCurrentDirectory(new File("C:\\Users\\Lenovo\\Desktop"));
+        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncodingApplication"));
         int userSelection = fileChooser.showSaveDialog(null);
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
@@ -340,7 +340,7 @@ class FileSaver {
     public static void saveHuffmanCodes(Map<Character, String> huffmanCodes) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Huffman Codes");
-        fileChooser.setCurrentDirectory(new File("C:\\Users\\Lenovo\\Desktop"));
+        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncodingApplication"));
         int userSelection = fileChooser.showSaveDialog(null);
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
@@ -359,7 +359,7 @@ class FileSaver {
     public static void saveDecodedText(String decodedText) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Decoded Text");
-        fileChooser.setCurrentDirectory(new File("C:\\Users\\Lenovo\\Desktop"));
+        fileChooser.setCurrentDirectory(new File("E:\\Programming\\HuffmanEncodingApplication"));
         int userSelection = fileChooser.showSaveDialog(null);
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
