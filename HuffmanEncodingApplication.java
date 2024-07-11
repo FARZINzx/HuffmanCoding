@@ -1,27 +1,44 @@
-import javax.swing.*;
+//import JAVAX.SWING.LIBRARIES
+import javax.swing.JPanel;
+import javax.swing.JFileChooser;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
+//import JAVA.AWT.LIBRARIES
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+//import JAVA.IO.LIBRARIES
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+//import JAVA.UTIL.LIBRARIES
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 
-// کلاس برای آپلود فایل
+
+// Class that provides functionality for selecting and uploading a text file
 class FileUploader {
+    // Method to upload a file using a file chooser
     public static String uploadFile() {
+        // Create a file chooser with custom filter
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
         fileChooser.setFileFilter(filter);
-        fileChooser.setDialogTitle("Select a text file");
-        fileChooser.setApproveButtonText("Upload");
-        fileChooser.setApproveButtonToolTipText("Click to upload the selected text file");
+        fileChooser.setDialogTitle("Please,Select .txt file!");
+        fileChooser.setApproveButtonText("Submit");
+        fileChooser.setApproveButtonToolTipText("Click to Submit the selected text file");
 
-        // تنظیمات پیش‌فرض برای دایرکتوری
+        // Setting Default repository
         fileChooser.setCurrentDirectory(new File("C:\\Users\\Lenovo\\Desktop"));
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
@@ -33,6 +50,7 @@ class FileUploader {
         return null;
     }
 
+    // Method for reading the contents of a file and returning it as a String
     private static String readFile(File file) {
         StringBuilder content = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -47,12 +65,13 @@ class FileUploader {
     }
 }
 
-// کلاس برای تحلیل متن
+// Class for analyzing text to calculate character frequencies
 class TextAnalyzer {
     public static Map<Character, Integer> analyzeText(String text) {
         Map<Character, Integer> frequencyMap = new HashMap<>();
         for (char c : text.toCharArray()) {
-            if (c != '\r' && c != '\n') { // نادیده گرفتن کاراکترهای خط جدید
+            // Ignore carriage return and newline characters
+            if (c != '\r' && c != '\n') {
                 frequencyMap.put(c, frequencyMap.getOrDefault(c, 0) + 1);
             }
         }
@@ -60,7 +79,7 @@ class TextAnalyzer {
     }
 }
 
-// کلاس برای نودهای درخت هافمن
+// Class for represente a node in the Huffman tree
 class HuffmanNode implements Comparable<HuffmanNode> {
     char c;
     int frequency;
@@ -71,53 +90,66 @@ class HuffmanNode implements Comparable<HuffmanNode> {
         this.frequency = frequency;
     }
 
+    //// ??//
     @Override
     public int compareTo(HuffmanNode node) {
         return this.frequency - node.frequency;
     }
 }
 
-// کلاس برای ساخت درخت هافمن
+// Class for building the Huffman tree by HuffmanNode
 class HuffmanTree {
     public static HuffmanNode buildTree(Map<Character, Integer> frequencyMap) {
+        // Create a priority queue(Min-heap) to hold the nodes, sorted by frequency
         PriorityQueue<HuffmanNode> queue = new PriorityQueue<>();
+        // Add each character and its frequency to the queue as a nod
         for (Map.Entry<Character, Integer> entry : frequencyMap.entrySet()) {
             queue.add(new HuffmanNode(entry.getKey(), entry.getValue()));
         }
 
+        // Build the huffman tree , Combime two nodes with the lowest frequency
         while (queue.size() > 1) {
             HuffmanNode left = queue.poll();
             HuffmanNode right = queue.poll();
+            // Create a new parent of two parent
             HuffmanNode parent = new HuffmanNode('\0', left.frequency + right.frequency);
             parent.left = left;
             parent.right = right;
             queue.add(parent);
         }
+        // The last remaining node is the root of the Huffman tree
         return queue.poll();
     }
 }
 
-// کلاس برای تولید کدهای هافمن
+// Class for generating Huffman codes
 class HuffmanCode {
     public static Map<Character, String> generateCodes(HuffmanNode root) {
         Map<Character, String> codeMap = new HashMap<>();
+        // Recursively generate the codes and store them in the map
         generateCodesRecursive(root, "", codeMap);
         return codeMap;
     }
 
+    // Recursive method to generate Huffman codes
     private static void generateCodesRecursive(HuffmanNode node, String code, Map<Character, String> codeMap) {
         if (node == null) {
             return;
         }
+        // if the node is leaf
         if (node.left == null && node.right == null) {
             codeMap.put(node.c, code);
         }
+        // Recursively generate codes for the left and right children
         generateCodesRecursive(node.left, code + "0", codeMap);
         generateCodesRecursive(node.right, code + "1", codeMap);
     }
 
+    // Method to encode the text using the generated Huffman codes
     public static String encodeText(String text, Map<Character, String> huffmanCodes) {
         StringBuilder encodedText = new StringBuilder();
+        // Iterate through each character in the text and add its Huffman code to the
+        // result
         for (char c : text.toCharArray()) {
             if (huffmanCodes.containsKey(c)) {
                 encodedText.append(huffmanCodes.get(c));
@@ -127,7 +159,7 @@ class HuffmanCode {
     }
 }
 
-// کلاس برای نمایش جدول تبدیل
+// Class for displaying the Huffman codes in a table format
 class HuffmanTablePanel extends JPanel {
     private Map<Character, String> huffmanCodes;
 
@@ -135,6 +167,7 @@ class HuffmanTablePanel extends JPanel {
         this.huffmanCodes = huffmanCodes;
     }
 
+    // Override paintComponent
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -147,7 +180,7 @@ class HuffmanTablePanel extends JPanel {
     }
 }
 
-// کلاس برای رسم درخت هافمن
+// Class for drawing the Huffman tree
 class HuffmanTreePanel extends JPanel {
     private HuffmanNode root;
     private Map<Character, String> huffmanCodes;
@@ -157,19 +190,23 @@ class HuffmanTreePanel extends JPanel {
         this.huffmanCodes = huffmanCodes;
     }
 
+    // Override paintComponent
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         setBackground(Color.CYAN);
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setStroke(new BasicStroke(2)); // تنظیم ضخامت خطوط به 2 پیکسل
+        g2d.setStroke(new BasicStroke(2));
 
         if (root != null) {
+            // Draw the Huffman tree starting from the root
             drawTree(g2d, root, getWidth() / 2, 30, getWidth() / 4);
+            // Draw the frequencies and Huffman codes
             drawFrequencyAndCodes(g2d, root, getWidth() / 2, 30, getWidth() / 4);
         }
     }
 
+    // Method to draw the frequencies and Huffman codes for each node
     private void drawFrequencyAndCodes(Graphics g, HuffmanNode node, int x, int y, int xOffset) {
         if (node != null) {
             if (node.left != null) {
@@ -185,7 +222,6 @@ class HuffmanTreePanel extends JPanel {
                 drawFrequencyAndCodes(g, node.right, xRight, yRight, xOffset / 2);
             }
 
-            // نمایش فراوانی و کد هافمن در زیر هر نود
             if (node.left == null && node.right == null) {
                 g.drawString("Code: " + huffmanCodes.get(node.c), x - 15, y + 100);
                 g.drawString("Freq: " + node.frequency, x - 15, y + 80);
@@ -193,6 +229,7 @@ class HuffmanTreePanel extends JPanel {
         }
     }
 
+    // Method to draw the Huffman tree
     private void drawTree(Graphics g, HuffmanNode node, int x, int y, int xOffset) {
         if (node != null) {
             g.drawOval(x - 15, y - 15, 30, 30);
@@ -210,10 +247,12 @@ class HuffmanTreePanel extends JPanel {
             if (node.left == null && node.right == null) {
                 g.drawString(huffmanCodes.get(node.c), x - 15, y + 35);
             }
+            // Draw the left child
             if (node.left != null) {
                 g.drawLine(x, y, x - xOffset, y + 50);
                 drawTree(g, node.left, x - xOffset, y + 50, xOffset / 2);
             }
+            // Draw the right child
             if (node.right != null) {
                 g.drawLine(x, y, x + xOffset, y + 50);
                 drawTree(g, node.right, x + xOffset, y + 50, xOffset / 2);
@@ -222,8 +261,9 @@ class HuffmanTreePanel extends JPanel {
     }
 }
 
-// کلاس برای نمایش متن کدگذاری شده
+// Class for drawing the Encoded Text
 class EncodedTextPanel extends JPanel {
+    @SuppressWarnings("unused")
     private String encodedText;
 
     public EncodedTextPanel(String encodedText) {
@@ -239,6 +279,7 @@ class EncodedTextPanel extends JPanel {
     }
 }
 
+// Class for drawing the Frequency
 class FrequencyPanel extends JPanel {
     Map<Character, Integer> frequencyMap;
 
@@ -249,7 +290,6 @@ class FrequencyPanel extends JPanel {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Character, Integer> entry : frequencyMap.entrySet()) {
             sb.append("'").append(entry.getKey()).append("': ").append(entry.getValue()).append("\n");
-            ;
         }
         textArea.setText(sb.toString());
         textArea.setEditable(false);
@@ -259,7 +299,27 @@ class FrequencyPanel extends JPanel {
     }
 }
 
+// Class for drawing the Decoded Text
+class DecodedTextPanel extends JPanel {
+    @SuppressWarnings("unused")
+    private String decodedText;
+
+    public DecodedTextPanel(String decodedText) {
+        this.decodedText = decodedText;
+        setLayout(new BorderLayout());
+        JTextArea textArea = new JTextArea();
+        textArea.setText(decodedText);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        add(scrollPane, BorderLayout.CENTER);
+    }
+}
+
+// class for save file in custom location
 class FileSaver {
+    // method that save Encoded text in custom location
     public static void saveEncodedText(String encodedText) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Encoded Text");
@@ -275,6 +335,7 @@ class FileSaver {
         }
     }
 
+    // method that save Encoded text in custom location
     public static void saveHuffmanCodes(Map<Character, String> huffmanCodes) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Huffman Codes");
@@ -293,6 +354,7 @@ class FileSaver {
         }
     }
 
+    // method that save Encoded text in custom location
     public static void saveDecodedText(String decodedText) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Decoded Text");
@@ -309,7 +371,7 @@ class FileSaver {
     }
 }
 
-// کلاس برای کدگشایی متن
+// class for decoding Huffman encoded Text
 class HuffmanDecoder {
     public static String decodeText(String encodedText, HuffmanNode root) {
         StringBuilder decodedText = new StringBuilder();
@@ -330,51 +392,55 @@ class HuffmanDecoder {
     }
 }
 
-class DecodedTextPanel extends JPanel {
-    private String decodedText;
-
-    public DecodedTextPanel(String decodedText) {
-        this.decodedText = decodedText;
-        setLayout(new BorderLayout());
-        JTextArea textArea = new JTextArea();
-        textArea.setText(decodedText);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        add(scrollPane, BorderLayout.CENTER);
-    }
-}
-
-// کلاس اصلی برای اجرای برنامه
-public class HuffmanCoding {
+// Main class for the Huffman Encoding application
+public class HuffmanEncodingApplication {
     public static void main(String[] args) {
+        // Upload the file and read its contents
         String text = FileUploader.uploadFile();
 
         if (text != null) {
+            // Analyze the text to calculate character frequencies
             Map<Character, Integer> frequencyMap = TextAnalyzer.analyzeText(text);
+
+            // Build the Huffman tree from the frequency map
             HuffmanNode root = HuffmanTree.buildTree(frequencyMap);
+
+            // Generate Huffman codes from the Huffman tree
             Map<Character, String> huffmanCodes = HuffmanCode.generateCodes(root);
+
+            // Generate EncodedText and DecodedText
             String encodedText = HuffmanCode.encodeText(text, huffmanCodes);
             String decodedText = HuffmanDecoder.decodeText(encodedText, root);
 
-            // ذخیره متن کدگذاری شده و جدول تبدیل در فایل‌های متنی
+            // Save EncodedText & HuffmanCode & DeacodedText in custom location
             FileSaver.saveEncodedText(encodedText);
             FileSaver.saveHuffmanCodes(huffmanCodes);
             FileSaver.saveDecodedText(decodedText);
 
+            // Create a Frame to show Data and Set size to it
             JFrame frame = new JFrame("Huffman Coding");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1600, 900);
+            frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Set frame to full screen
 
+            // create a JTabbedPane for set layout for the frame
             JTabbedPane tabbedPane = new JTabbedPane();
 
+            // Add FrequencyPanel to JTabbedPane
             tabbedPane.addTab("Character Frequencies", new FrequencyPanel(frequencyMap));
+
+            // Add HuffmanTreePanel to JTabbedPane
             tabbedPane.addTab("Huffman Tree", new HuffmanTreePanel(root, huffmanCodes));
+
+            // Add HuffmanTablePanel to JTabbedPane
             tabbedPane.addTab("Huffman Codes", new HuffmanTablePanel(huffmanCodes));
+
+            // Add EncodedTextPanel to JTabbedPane
             tabbedPane.addTab("Encoded Text", new EncodedTextPanel(encodedText));
+
+            // Add DecodedTextPanel to JTabbedPane
             tabbedPane.addTab("Decoded Text", new DecodedTextPanel(decodedText));
 
+            // Add JTabbedPane to Frame
             frame.add(tabbedPane);
             frame.setVisible(true);
         }
