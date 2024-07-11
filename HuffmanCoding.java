@@ -263,6 +263,28 @@ class FileSaver {
     }
 }
 
+// کلاس برای کدگشایی متن
+class HuffmanDecoder {
+    public static String decodeText(String encodedText, HuffmanNode root) {
+        StringBuilder decodedText = new StringBuilder();
+        HuffmanNode currentNode = root;
+        for (char bit : encodedText.toCharArray()) {
+            if (bit == '0') {
+                currentNode = currentNode.left;
+            } else if (bit == '1') {
+                currentNode = currentNode.right;
+            }
+
+            if (currentNode.left == null && currentNode.right == null) {
+                decodedText.append(currentNode.c);
+                currentNode = root;
+            }
+        }
+        return decodedText.toString();
+    }
+}
+
+
 // کلاس اصلی برای اجرای برنامه
 public class HuffmanCoding {
     public static void main(String[] args) {
@@ -290,6 +312,11 @@ public class HuffmanCoding {
             // ذخیره متن کدگذاری شده و جدول تبدیل در فایل‌های متنی
             FileSaver.saveEncodedText(encodedText, "encoded_text.txt");
             FileSaver.saveHuffmanCodes(huffmanCodes, "huffman_codes.txt");
+
+             // کدگشایی متن کدگذاری شده
+             String decodedText = HuffmanDecoder.decodeText(encodedText, root);
+             System.out.println("\nDecoded Text:");
+             System.out.println(decodedText);
 
             JFrame frame = new JFrame("Huffman Coding");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
