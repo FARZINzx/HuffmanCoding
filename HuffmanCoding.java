@@ -293,7 +293,7 @@ public class HuffmanCoding {
 
             JFrame frame = new JFrame("Huffman Coding");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 800);
+            frame.setSize(1690, 900);
 
             // افزودن پنل‌های درخت، جدول تبدیل و متن کدگذاری شده
             JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -301,7 +301,7 @@ public class HuffmanCoding {
 
             upperSplitPane.setLeftComponent(new HuffmanTreePanel(root, huffmanCodes));
             upperSplitPane.setRightComponent(new HuffmanTablePanel(huffmanCodes));
-            upperSplitPane.setDividerLocation(400);
+            upperSplitPane.setDividerLocation(1400);
 
             mainSplitPane.setTopComponent(upperSplitPane);
             mainSplitPane.setBottomComponent(new EncodedTextPanel(encodedText));
