@@ -312,6 +312,7 @@ class DecodedTextPanel extends JPanel {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setEditable(false);
+        textArea.setFont(new Font("Sans-serif", Font.PLAIN, 16));
         JScrollPane scrollPane = new JScrollPane(textArea);
         add(scrollPane, BorderLayout.CENTER);
     }
