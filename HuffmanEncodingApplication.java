@@ -3,6 +3,7 @@
 import javax.swing.JPanel;
 import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import javax.swing.JScrollPane;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -30,6 +31,24 @@ import java.util.PriorityQueue;
 class FileUploader {
     // Method to upload a file using a file chooser
     public static String uploadFile() {
+        try {
+            // Set LookAndFeel to Nimbus to allow some appearance settings
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Change color and appearance settings
+        UIManager.put("FileChooser.background", new Color(60, 63, 65));
+        UIManager.put("FileChooser.foreground", new Color(187, 187, 187));
+        UIManager.put("FileChooser.panelBackground", new Color(60, 63, 65));
+        UIManager.put("FileChooser.panelForeground", new Color(187, 187, 187));
+        UIManager.put("FileChooser.buttonBackground", new Color(75, 110, 175));
+        UIManager.put("FileChooser.buttonForeground", new Color(255, 255, 255));
         // Create a file chooser with custom filter
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
