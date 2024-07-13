@@ -117,7 +117,7 @@ class HuffmanNode implements Comparable<HuffmanNode> {
 }
 
 // Class for building the Huffman tree by HuffmanNode
-class HuffmanTreeBulider {
+class HuffmanTreeBuilder {
     public static HuffmanNode buildTree(Map<Character, Integer> frequencyMap) {
         // Create a priority queue(Min-heap) to hold the nodes, sorted by frequency
         PriorityQueue<HuffmanNode> queue = new PriorityQueue<>();
@@ -423,7 +423,7 @@ public class HuffmanEncodingApplication {
             Map<Character, Integer> frequencyMap = TextAnalyzer.analyzeText(text);
 
             // Build the Huffman tree from the frequency map
-            HuffmanNode root = HuffmanTreeBulider.buildTree(frequencyMap);
+            HuffmanNode root = HuffmanTreeBuilder.buildTree(frequencyMap);
 
             // Generate Huffman codes from the Huffman tree
             Map<Character, String> huffmanCodes = HuffmanCode.generateCodes(root);
