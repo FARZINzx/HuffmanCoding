@@ -83,3 +83,5 @@ Java HuffmanEncodingApplication</code>  </pre>
     </ul>
     <h2>Contributing</h2>
     <p>Contributions are welcome! If you have suggestions for improvements, please submit a pull request or open an issue.</p>
+    <p>Made with ❤️ by <b>FARZINzx</b></p>
+
